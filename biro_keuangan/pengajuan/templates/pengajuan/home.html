@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+    <h1>Daftar Pengajuan</h1>
+    {% if pengajuan_list %}
+        <ul>
+            {% for pengajuan in pengajuan_list %}
+                <li>{{ pengajuan.judul }} - {{ pengajuan.deskripsi }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Belum ada pengajuan yang tercatat.</p>
+    {% endif %}
+    <a href="{% url 'create_pengajuan' %}">Buat Pengajuan Baru</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
