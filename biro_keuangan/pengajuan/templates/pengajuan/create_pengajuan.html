@@ -1,68 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Buat Pengajuan Baru</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        form label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        form input, form select, form textarea {
-            margin-bottom: 10px;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        form button {
-            padding: 10px 15px;
-            font-size: 16px;
-            background-color: #c0392b;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        form button:hover {
-            background-color: #a93226;
-        }
-        .back-link {
-            margin-top: 15px;
-            display: inline-block;
-            color: #c0392b;
-            text-decoration: none;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
+{% extends 'base.html' %}
+
+{% block title %}Create Pengajuan - Biro Keuangan{% endblock %}
+
+{% block content %}
         <h1>Buat Pengajuan Baru</h1>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -70,6 +10,4 @@
             <button type="submit">Submit</button>
         </form>
         <a class="back-link" href="{% url 'home' %}">Kembali ke Daftar Pengajuan</a>
-    </div>
-</body>
-</html>
+{% endblock %}

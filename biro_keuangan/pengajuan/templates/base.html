@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Biro Keuangan{% endblock %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .navbar {
+            background-color: #b91d1d;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+        .navbar .navbar-brand {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .navbar .navbar-nav {
+            display: flex;
+            align-items: center;
+        }
+        .navbar .nav-item {
+            margin-left: 20px;
+        }
+        .navbar .nav-item .nav-link {
+            color: #fff;
+        }
+        .sidebar {
+            width: 240px;
+            background: #f8f9fa;
+            height: 100vh;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            padding-top: 10px;
+            transition: width 0.3s;
+            overflow-x: hidden;
+        }
+        .sidebar a {
+            color: #000;
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .sidebar.collapsed a {
+            text-align: center;
+            padding: 10px;
+        }
+        .sidebar.collapsed a span {
+            display: none;
+        }
+        .content {
+            margin-left: 240px;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed + .content {
+            margin-left: 70px;
+        }
+        .toggle-icon {
+            cursor: pointer;
+            font-size: 24px;
+            color: #fff;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <span class="toggle-icon" onclick="toggleSidebar()">&#9776;</span>
+        <a class="navbar-brand" href="#">Biro Keuangan</a>
+        <div class="navbar-nav ml-auto">
+            <a class="nav-item nav-link" href="#">Hello, {{ user.username }}</a>
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <a href="{% url 'home' %}"><span>Homepage</span></a>
+        <a href="{% url 'create_pengajuan' %}"><span>Create Pengajuan</span></a>
+        <a href="#"><span>Tracking Data</span></a>
+    </div>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.content').classList.toggle('collapsed');
+        }
+    </script>
+</body>
+</html>

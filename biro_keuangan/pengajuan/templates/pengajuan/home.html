@@ -1,20 +1,92 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home</title>
-</head>
-<body>
-    <h1>Daftar Pengajuan</h1>
-    {% if pengajuan_list %}
-        <ul>
-            {% for pengajuan in pengajuan_list %}
-                <li>{{ pengajuan.judul }} - {{ pengajuan.deskripsi }}</li>
+{% extends 'base.html' %}
+
+{% block title %}Home - Biro Keuangan{% endblock %}
+
+{% block content %}
+<h1>Daftar Pengajuan</h1>
+<form method="get">
+    <input type="text" name="search" placeholder="Search..." value="{{ search_query }}">
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+{% if page_obj.object_list %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th><a href="?sort=id">ID</a></th>
+                <th><a href="?sort=judul">Judul</a></th>
+                <th><a href="?sort=jumlah">Jumlah</a></th>
+                <th><a href="?sort=disposisi_pimpinan">Disposisi Pimpinan</a></th>
+                <th>Created By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pengajuan in page_obj %}
+            <tr>
+                <td>{{ pengajuan.id }}</td>
+                <td>{{ pengajuan.judul }}</td>
+                <td>{{ pengajuan.jumlah }}</td>
+                <td>{{ pengajuan.disposisi_pimpinan|yesno:"Yes,No" }}</td>
+                <td>{{ pengajuan.user.username }}</td>
+                <td>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#viewModal{{ pengajuan.id }}">View</button>
+                </td>
+            </tr>
+
+            <!-- Modal -->
+            <div class="modal fade" id="viewModal{{ pengajuan.id }}" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel{{ pengajuan.id }}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewModalLabel{{ pengajuan.id }}">Detail Pengajuan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>ID:</strong> {{ pengajuan.id }}</p>
+                            <p><strong>Judul:</strong> {{ pengajuan.judul }}</p>
+                            <p><strong>Deskripsi:</strong> {{ pengajuan.deskripsi }}</p>
+                            <p><strong>Jumlah:</strong> {{ pengajuan.jumlah }}</p>
+                            <p><strong>Tanggal Pengajuan:</strong> {{ pengajuan.tanggal_pengajuan }}</p>
+                            <p><strong>Disposisi Pimpinan:</strong> {{ pengajuan.disposisi_pimpinan|yesno:"Yes,No" }}</p>
+                            <p><strong>Approval Kepala Biro:</strong> {{ pengajuan.approval_kepala_biro|yesno:"Yes,No" }}</p>
+                            <p><strong>Kwitansi Filled:</strong> {{ pengajuan.kwitansi_filled|yesno:"Yes,No" }}</p>
+                            <p><strong>Status:</strong> {{ pengajuan.status }}</p>
+                            <p><strong>Upload Surat Pengajuan:</strong> 
+                                {% if pengajuan.upload_surat_pengajuan %}
+                                    <a href="{{ pengajuan.upload_surat_pengajuan.url }}" target="_blank">{{ pengajuan.upload_surat_pengajuan.name }}</a>
+                                {% else %}
+                                    No file uploaded
+                                {% endif %}
+                            </p>
+                            <p><strong>Created By:</strong> {{ pengajuan.user.username }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+            {% endif %}
         </ul>
-    {% else %}
-        <p>Belum ada pengajuan yang tercatat.</p>
-    {% endif %}
-    <a href="{% url 'create_pengajuan' %}">Buat Pengajuan Baru</a>
-    <a href="{% url 'logout' %}">Logout</a>
-</body>
-</html>
+    </nav>
+{% else %}
+    <p>Belum ada pengajuan yang tercatat.</p>
+{% endif %}
+<a href="{% url 'create_pengajuan' %}" class="btn btn-primary">Buat Pengajuan Baru</a>
+<a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+{% endblock %}

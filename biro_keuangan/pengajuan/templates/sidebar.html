@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+<div class="bg-light border-right" id="sidebar-wrapper">
+    <div class="sidebar-heading">Biro Keuangan</div>
+    <div class="list-group list-group-flush">
+        <a href="{% url 'home' %}" class="list-group-item list-group-item-action bg-light">Homepage</a>
+        <a href="{% url 'create_pengajuan' %}" class="list-group-item list-group-item-action bg-light">Create Pengajuan</a>
+        <a href="#" class="list-group-item list-group-item-action bg-light">Tracking Data</a>
+    </div>
+</div>
+{% endblock %}

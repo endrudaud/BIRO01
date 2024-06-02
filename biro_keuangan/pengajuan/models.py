@@ -1,16 +1,10 @@
-# pengajuan/models.py
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils.timezone import now
-
-# pengajuan/models.py
 from django.db import models
 from django.contrib.auth.models import User
 
 class SuratPengajuan(models.Model):
     judul = models.CharField(max_length=255)
     deskripsi = models.TextField()
-    jumlah = models.DecimalField(max_digits=10, decimal_places=2)  # Ensure this is a decimal field
+    jumlah = models.DecimalField(max_digits=10, decimal_places=2)
     tanggal_pengajuan = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     disposisi_pimpinan = models.BooleanField(default=False)
@@ -23,7 +17,6 @@ class SuratPengajuan(models.Model):
 
     def __str__(self):
         return self.judul
-
 
 class DisposisiPimpinan(models.Model):
     STATUS_CHOICES = [
