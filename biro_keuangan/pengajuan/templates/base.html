@@ -4,109 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Biro Keuangan{% endblock %}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        .navbar {
-            background-color: #b91d1d;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-        }
-        .navbar .navbar-brand {
-            color: #fff;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .navbar .navbar-nav {
-            display: flex;
-            align-items: center;
-        }
-        .navbar .nav-item {
-            margin-left: 20px;
-        }
-        .navbar .nav-item .nav-link {
-            color: #fff;
-        }
-        .sidebar {
-            width: 240px;
-            background: #f8f9fa;
-            height: 100vh;
-            position: fixed;
-            top: 56px;
-            left: 0;
-            padding-top: 10px;
-            transition: width 0.3s;
-            overflow-x: hidden;
-        }
-        .sidebar a {
-            color: #000;
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #ddd;
-        }
-        .sidebar.collapsed {
-            width: 70px;
-        }
-        .sidebar.collapsed a {
-            text-align: center;
-            padding: 10px;
-        }
-        .sidebar.collapsed a span {
-            display: none;
-        }
-        .content {
-            margin-left: 240px;
-            padding: 20px;
-            transition: margin-left 0.3s;
-        }
-        .sidebar.collapsed + .content {
-            margin-left: 70px;
-        }
-        .toggle-icon {
-            cursor: pointer;
-            font-size: 24px;
-            color: #fff;
-            margin-right: 20px;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <span class="toggle-icon" onclick="toggleSidebar()">&#9776;</span>
-        <a class="navbar-brand" href="#">Biro Keuangan</a>
-        <div class="navbar-nav ml-auto">
-            <a class="nav-item nav-link" href="#">Hello, {{ user.username }}</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Biro Keuangan</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Homepage</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'create_pengajuan' %}">Create Pengajuan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+                <span class="navbar-text ms-auto">
+                    Hello, {{ user.username }}
+                </span>
+            </div>
         </div>
     </nav>
-
-    <div class="sidebar">
-        <a href="{% url 'home' %}"><span>Homepage</span></a>
-        <a href="{% url 'create_pengajuan' %}"><span>Create Pengajuan</span></a>
-        <a href="#"><span>Tracking Data</span></a>
+    <div class="container">
+        {% block content %}{% endblock %}
     </div>
-
-    <div class="content">
-        {% block content %}
-        {% endblock %}
-    </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-            document.querySelector('.content').classList.toggle('collapsed');
-        }
-    </script>
 </body>
 </html>

@@ -16,6 +16,7 @@
                 <th><a href="?sort=judul">Judul</a></th>
                 <th><a href="?sort=jumlah">Jumlah</a></th>
                 <th><a href="?sort=disposisi_pimpinan">Disposisi Pimpinan</a></th>
+                <th>Approval Status</th>
                 <th>Created By</th>
                 <th>Actions</th>
             </tr>
@@ -27,13 +28,27 @@
                 <td>{{ pengajuan.judul }}</td>
                 <td>{{ pengajuan.jumlah }}</td>
                 <td>{{ pengajuan.disposisi_pimpinan|yesno:"Yes,No" }}</td>
+                <td>
+                    {% if pengajuan.approvalkepalabiro %}
+                        {{ pengajuan.approvalkepalabiro.approval_status }}
+                    {% else %}
+                        Not Available
+                    {% endif %}
+                </td>
                 <td>{{ pengajuan.user.username }}</td>
                 <td>
                     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#viewModal{{ pengajuan.id }}">View</button>
+                    {% if is_admin %}
+                    <a href="{% url 'update_approval_status' pengajuan.approvalkepalabiro.id %}" class="btn btn-warning">Change Status</a>
+                    <a href="{% url 'update_disposisi_pimpinan' pengajuan.id %}" class="btn btn-primary">Update Disposisi</a>
+                    {% endif %}
+                    {% if pengajuan.approvalkepalabiro and pengajuan.approvalkepalabiro.approval_status == 'approved' and not pengajuan.kwitansi_filled %}
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadKwitansiModal{{ pengajuan.id }}">Upload Kwitansi</button>
+                    {% endif %}
                 </td>
             </tr>
 
-            <!-- Modal -->
+            <!-- View Modal -->
             <div class="modal fade" id="viewModal{{ pengajuan.id }}" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel{{ pengajuan.id }}" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -50,7 +65,13 @@
                             <p><strong>Jumlah:</strong> {{ pengajuan.jumlah }}</p>
                             <p><strong>Tanggal Pengajuan:</strong> {{ pengajuan.tanggal_pengajuan }}</p>
                             <p><strong>Disposisi Pimpinan:</strong> {{ pengajuan.disposisi_pimpinan|yesno:"Yes,No" }}</p>
-                            <p><strong>Approval Kepala Biro:</strong> {{ pengajuan.approval_kepala_biro|yesno:"Yes,No" }}</p>
+                            <p><strong>Approval Kepala Biro:</strong> 
+                                {% if pengajuan.approvalkepalabiro %}
+                                    {{ pengajuan.approvalkepalabiro.approval_status }}
+                                {% else %}
+                                    Not Available
+                                {% endif %}
+                            </p>
                             <p><strong>Kwitansi Filled:</strong> {{ pengajuan.kwitansi_filled|yesno:"Yes,No" }}</p>
                             <p><strong>Status:</strong> {{ pengajuan.status }}</p>
                             <p><strong>Upload Surat Pengajuan:</strong> 
@@ -68,6 +89,34 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Upload Kwitansi Modal -->
+            <div class="modal fade" id="uploadKwitansiModal{{ pengajuan.id }}" tabindex="-1" role="dialog" aria-labelledby="uploadKwitansiModalLabel{{ pengajuan.id }}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadKwitansiModalLabel{{ pengajuan.id }}">Upload Kwitansi</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'upload_kwitansi' pengajuan.id %}">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="kwitansiFile">Upload Kwitansi</label>
+                                    <input type="file" class="form-control-file" id="kwitansiFile" name="kwitansi_file">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Upload</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             {% endfor %}
         </tbody>
     </table>

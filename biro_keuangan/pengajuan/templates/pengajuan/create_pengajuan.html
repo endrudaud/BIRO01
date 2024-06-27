@@ -1,13 +1,68 @@
 {% extends 'base.html' %}
 
-{% block title %}Create Pengajuan - Biro Keuangan{% endblock %}
+{% block title %}Buat Pengajuan Baru{% endblock %}
 
 {% block content %}
-        <h1>Buat Pengajuan Baru</h1>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Submit</button>
-        </form>
-        <a class="back-link" href="{% url 'home' %}">Kembali ke Daftar Pengajuan</a>
+<div class="container mt-5">
+    <h1 class="mb-4">Buat Pengajuan Baru</h1>
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="judul" class="form-label">Judul:</label>
+            <input type="text" class="form-control" id="judul" name="judul" required>
+            <div class="invalid-feedback">
+                Please provide a title.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="deskripsi" class="form-label">Deskripsi:</label>
+            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" required></textarea>
+            <div class="invalid-feedback">
+                Please provide a description.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="jumlah" class="form-label">Jumlah:</label>
+            <input type="number" class="form-control" id="jumlah" name="jumlah" required>
+            <div class="invalid-feedback">
+                Please provide an amount.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="upload_surat_pengajuan" class="form-label">Upload surat pengajuan:</label>
+            <input class="form-control" type="file" id="upload_surat_pengajuan" name="upload_surat_pengajuan">
+        </div>
+        <div class="mb-3 form-check">
+            <input class="form-check-input" type="checkbox" id="disposisi_pimpinan" name="disposisi_pimpinan">
+            <label class="form-check-label" for="disposisi_pimpinan">
+                Disposisi pimpinan
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Kembali ke Daftar Pengajuan</a>
+    </form>
+</div>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
 {% endblock %}

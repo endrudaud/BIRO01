@@ -1,0 +1,14 @@
+<!-- pengajuan/templates/pengajuan/update_approval_status.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Update Approval Status{% endblock %}
+
+{% block content %}
+<h1>Update Approval Status</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

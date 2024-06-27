@@ -1,0 +1,41 @@
+<!-- pengajuan/templates/pengajuan/user_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}User List - Biro Keuangan{% endblock %}
+
+{% block content %}
+<h1>Daftar Pengguna</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Is Admin</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.profile.is_admin|yesno:"Yes,No" }}</td>
+            <td>
+                {% if user.profile.is_admin %}
+                <form method="post" action="{% url 'toggle_admin_status' user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Remove Admin</button>
+                </form>
+                {% else %}
+                <form method="post" action="{% url 'toggle_admin_status' user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Make Admin</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
