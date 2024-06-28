@@ -39,11 +39,13 @@
                 <td>
                     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#viewModal{{ pengajuan.id }}">View</button>
                     {% if is_admin %}
-                    <a href="{% url 'update_approval_status' pengajuan.approvalkepalabiro.id %}" class="btn btn-warning">Change Status</a>
-                    <a href="{% url 'update_disposisi_pimpinan' pengajuan.id %}" class="btn btn-primary">Update Disposisi</a>
+                        {% if pengajuan.approvalkepalabiro %}
+                            <a href="{% url 'update_approval_status' pengajuan.approvalkepalabiro.id %}" class="btn btn-warning">Change Status</a>
+                        {% endif %}
+                        <a href="{% url 'update_disposisi_pimpinan' pengajuan.id %}" class="btn btn-primary">Update Disposisi</a>
                     {% endif %}
                     {% if pengajuan.approvalkepalabiro and pengajuan.approvalkepalabiro.approval_status == 'approved' and not pengajuan.kwitansi_filled %}
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadKwitansiModal{{ pengajuan.id }}">Upload Kwitansi</button>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadKwitansiModal{{ pengajuan.id }}">Upload Kwitansi</button>
                     {% endif %}
                 </td>
             </tr>
