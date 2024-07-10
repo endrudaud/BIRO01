@@ -8,15 +8,14 @@
     <input type="text" name="search" placeholder="Search..." value="{{ search_query }}">
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
-{% if page_obj.object_list %}
+{% if page_obj %}
     <table class="table">
         <thead>
             <tr>
                 <th><a href="?sort=id">ID</a></th>
                 <th><a href="?sort=judul">Judul</a></th>
                 <th><a href="?sort=jumlah">Jumlah</a></th>
-                <th><a href="?sort=disposisi_pimpinan">Disposisi Pimpinan</a></th>
-                <th>Approval Status</th>
+                <th>Status</th>
                 <th>Created By</th>
                 <th>Actions</th>
             </tr>
@@ -27,25 +26,56 @@
                 <td>{{ pengajuan.id }}</td>
                 <td>{{ pengajuan.judul }}</td>
                 <td>{{ pengajuan.jumlah }}</td>
-                <td>{{ pengajuan.disposisi_pimpinan|yesno:"Yes,No" }}</td>
                 <td>
-                    {% if pengajuan.approvalkepalabiro %}
-                        {{ pengajuan.approvalkepalabiro.approval_status }}
-                    {% else %}
-                        Not Available
-                    {% endif %}
+                    {% with pengajuan.disposisipimpinan_set.first as disposisi %}
+                        {% if not disposisi %}
+                            Menunggu Disposisi
+                        {% else %}
+                            {% if disposisi.disposisi_status == 'rejected' %}
+                                Ditolak (disposisi)
+                            {% elif disposisi.disposisi_status == 'approved' %}
+                                {% with pengajuan.approvalkepalabiro_set.first as approval %}
+                                    {% if not approval %}
+                                        Menunggu Approval Biro-01
+                                    {% elif approval.approval_status == 'rejected' %}
+                                        Ditolak (Biro01)
+                                    {% elif approval.approval_status == 'pending' %}
+                                        Menunggu Approval Biro-01
+                                    {% elif approval.approval_status == 'approved' and not pengajuan.kwitansi_filled %}
+                                        Menunggu upload kwitansi
+                                    {% elif pengajuan.kwitansi_filled %}
+                                        Selesai
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                Menunggu Disposisi
+                            {% endif %}
+                        {% endif %}
+                    {% endwith %}
                 </td>
                 <td>{{ pengajuan.user.username }}</td>
                 <td>
                     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#viewModal{{ pengajuan.id }}">View</button>
                     {% if is_admin %}
-                        {% if pengajuan.approvalkepalabiro %}
-                            <a href="{% url 'update_approval_status' pengajuan.approvalkepalabiro.id %}" class="btn btn-warning">Change Status</a>
-                        {% endif %}
-                        <a href="{% url 'update_disposisi_pimpinan' pengajuan.id %}" class="btn btn-primary">Update Disposisi</a>
+                        {% with pengajuan.disposisipimpinan_set.first as disposisi %}
+                            {% if not disposisi or disposisi.disposisi_status == 'pending' %}
+                                <a href="{% url 'update_disposisi_pimpinan' pengajuan.id %}" class="btn btn-primary">Update Disposisi</a>
+                            {% elif disposisi.disposisi_status == 'approved' %}
+                                {% with pengajuan.approvalkepalabiro_set.first as approval %}
+                                    {% if approval.approval_status == 'pending' %}
+                                        <a href="{% url 'update_approval_status' approval.id %}" class="btn btn-warning">Update Approval</a>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endwith %}
                     {% endif %}
-                    {% if pengajuan.approvalkepalabiro and pengajuan.approvalkepalabiro.approval_status == 'approved' and not pengajuan.kwitansi_filled %}
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadKwitansiModal{{ pengajuan.id }}">Upload Kwitansi</button>
+                    {% with pengajuan.approvalkepalabiro_set.first as approval %}
+                        {% if not is_admin and approval and approval.approval_status == 'approved' and not pengajuan.kwitansi_filled %}
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadKwitansiModal{{ pengajuan.id }}">Upload Kwitansi</button>
+                        {% endif %}
+                    {% endwith %}
+                    {% if pengajuan.kwitansi_filled %}
+                        <a href="{% url 'view_kwitansi' pengajuan.id %}" class="btn btn-secondary">Lihat Kwitansi</a>
                     {% endif %}
                 </td>
             </tr>
@@ -66,15 +96,25 @@
                             <p><strong>Deskripsi:</strong> {{ pengajuan.deskripsi }}</p>
                             <p><strong>Jumlah:</strong> {{ pengajuan.jumlah }}</p>
                             <p><strong>Tanggal Pengajuan:</strong> {{ pengajuan.tanggal_pengajuan }}</p>
-                            <p><strong>Disposisi Pimpinan:</strong> {{ pengajuan.disposisi_pimpinan|yesno:"Yes,No" }}</p>
-                            <p><strong>Approval Kepala Biro:</strong> 
-                                {% if pengajuan.approvalkepalabiro %}
-                                    {{ pengajuan.approvalkepalabiro.approval_status }}
-                                {% else %}
-                                    Not Available
-                                {% endif %}
+                            <p><strong>Disposisi Pimpinan:</strong> 
+                                {% with pengajuan.disposisipimpinan_set.first as disposisi %}
+                                    {{ disposisi.disposisi_status|default:"Not Available" }}
+                                {% endwith %}
                             </p>
-                            <p><strong>Kwitansi Filled:</strong> {{ pengajuan.kwitansi_filled|yesno:"Yes,No" }}</p>
+                            <p><strong>Approval Kepala Biro:</strong> 
+                                {% with pengajuan.approvalkepalabiro_set.first as approval %}
+                                    {{ approval.approval_status|default:"Not Available" }}
+                                {% endwith %}
+                            </p>
+                            <p><strong>Kwitansi Filled:</strong> 
+                                {% with pengajuan.kwitansi_set.first as kwitansi %}
+                                    {% if kwitansi.upload_file %}
+                                        <a href="{{ kwitansi.upload_file.url }}">Yes</a>
+                                    {% else %}
+                                        No
+                                    {% endif %}
+                                {% endwith %}
+                            </p>
                             <p><strong>Status:</strong> {{ pengajuan.status }}</p>
                             <p><strong>Upload Surat Pengajuan:</strong> 
                                 {% if pengajuan.upload_surat_pengajuan %}
@@ -140,4 +180,5 @@
 {% endif %}
 <a href="{% url 'create_pengajuan' %}" class="btn btn-primary">Buat Pengajuan Baru</a>
 <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+
 {% endblock %}

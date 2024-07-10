@@ -22,7 +22,6 @@ class SuratPengajuan(models.Model):
     jumlah = models.DecimalField(max_digits=10, decimal_places=2)
     tanggal_pengajuan = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    disposisi_pimpinan = models.BooleanField(default=False)
     kwitansi_filled = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=[('submitted', 'Submitted'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='submitted')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -65,13 +64,11 @@ class ApprovalKepalaBiro(models.Model):
 class Kwitansi(models.Model):
     surat_pengajuan = models.ForeignKey(SuratPengajuan, on_delete=models.CASCADE)
     tanggal_pengisian = models.DateTimeField(auto_now_add=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField(blank=True, null=True)
     upload_file = models.FileField(upload_to='kwitansi/', null=True, blank=True)
 
     def __str__(self):
-        return f'{self.surat_pengajuan} - {self.amount}'
-
+        return f'{self.surat_pengajuan} - {self.tanggal_pengisian}'
+    
 @receiver(post_save, sender=SuratPengajuan)
 def create_approval_kepala_biro(sender, instance, created, **kwargs):
     if created:

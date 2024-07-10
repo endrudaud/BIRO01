@@ -25,10 +25,10 @@ class UserCreationForm(forms.ModelForm):
 class SuratPengajuanForm(forms.ModelForm):
     class Meta:
         model = SuratPengajuan
-        fields = ['judul', 'deskripsi', 'jumlah', 'upload_surat_pengajuan', 'disposisi_pimpinan']
-        widgets = {
-            'disposisi_pimpinan': forms.CheckboxInput(),
-        }
+        fields = ['judul', 'deskripsi', 'jumlah', 'upload_surat_pengajuan']
+    class Meta:
+        model = SuratPengajuan
+        fields = ['judul', 'deskripsi', 'jumlah', 'upload_surat_pengajuan']
 
 class ApprovalStatusForm(forms.ModelForm):
     class Meta:
@@ -39,6 +39,11 @@ class DisposisiPimpinanForm(forms.ModelForm):
     class Meta:
         model = DisposisiPimpinan
         fields = ['disposisi_status', 'catatan']
+
+class ApprovalStatusForm(forms.ModelForm):
+    class Meta:
+        model = ApprovalKepalaBiro
+        fields = ['approval_status', 'catatan']
 
 class KwitansiForm(forms.ModelForm):
     class Meta:

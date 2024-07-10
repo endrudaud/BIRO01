@@ -7,8 +7,6 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -26,7 +24,10 @@
                         <a class="nav-link" href="{% url 'create_pengajuan' %}">Create Pengajuan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                            {% csrf_token %}
+                        </form>
+                        <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>
                     </li>
                 </ul>
                 <span class="navbar-text ms-auto">
@@ -38,5 +39,25 @@
     <div class="container">
         {% block content %}{% endblock %}
     </div>
+    
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize Bootstrap tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+    
+            // Ensure modals are correctly triggered
+            $('[data-toggle="modal"]').on('click', function() {
+                var target = $(this).data('target');
+                $(target).modal('show');
+            });
+    
+            // Close modal when the 'x' button or the close button is clicked
+            $('.modal').on('click', '[data-dismiss="modal"]', function() {
+                $(this).closest('.modal').modal('hide');
+            });
+        });
+    </script>
 </body>
 </html>

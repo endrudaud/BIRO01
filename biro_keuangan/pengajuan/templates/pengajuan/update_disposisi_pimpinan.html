@@ -1,0 +1,13 @@
+<!-- pengajuan/templates/pengajuan/update_disposisi_pimpinan.html -->
+{% extends 'base.html' %}
+
+{% block title %}Update Disposisi Pimpinan{% endblock %}
+
+{% block content %}
+<h1>Update Disposisi Pimpinan</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+{% endblock %}
