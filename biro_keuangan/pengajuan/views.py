@@ -82,12 +82,13 @@ def create_pengajuan(request):
         if form.is_valid():
             surat = form.save(commit=False)
             surat.user = request.user
+            surat.disposisi_pimpinan = False
             surat.save()
+            print(f'SuratPengajuan saved: {surat.id}')
             
-            if not ApprovalKepalaBiro.objects.filter(surat_pengajuan=surat).exists():
-                ApprovalKepalaBiro.objects.create(surat_pengajuan=surat)
-            
-            DisposisiPimpinan.objects.create(surat_pengajuan=surat)
+            DisposisiPimpinan.objects.create(surat_pengajuan=surat, disposisi_status='pending')
+            ApprovalKepalaBiro.objects.create(surat_pengajuan=surat, approval_status='pending')
+            print('Related records created')
 
             return redirect('home')
     else:

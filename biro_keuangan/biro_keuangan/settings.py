@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'biro_keuangan_db',
-        'USER': 'admin2',
+        'USER': 'admin',
         'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
