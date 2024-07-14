@@ -1,11 +1,6 @@
-<!-- view_image.html -->
-
 {% extends 'base.html' %}
 
-{% block title %}View Kwitansi{% endblock %}
-
 {% block content %}
-<h1>View Kwitansi</h1>
-<img src="{{ kwitansi.upload_file.url }}" alt="Kwitansi" style="max-width: 100%;">
-<a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+<h2>View Kwitansi</h2>
+<img src="{{ kwitansi.upload_file.url }}" alt="Kwitansi Image">
 {% endblock %}

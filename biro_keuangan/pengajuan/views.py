@@ -8,9 +8,11 @@ from django.http import HttpResponse, Http404
 from .forms import UserCreationForm, ApprovalStatusForm, SuratPengajuanForm, DisposisiPimpinanForm, KwitansiForm
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-import logging, os
+import os
+import logging
+
 logger = logging.getLogger(__name__)
-from django.core.files.storage import FileSystemStorage
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -102,20 +104,34 @@ def create_approval_kepala_biro(sender, instance, created, **kwargs):
         ApprovalKepalaBiro.objects.create(surat_pengajuan=instance)
 
 @login_required
+def upload_kwitansi(request, pk):
+    pengajuan = get_object_or_404(SuratPengajuan, pk=pk)
+    if request.method == 'POST':
+        form = KwitansiForm(request.POST, request.FILES)
+        if form.is_valid():
+            kwitansi = form.save(commit=False)
+            kwitansi.surat_pengajuan = pengajuan
+            kwitansi.save()
+            pengajuan.kwitansi_filled = True
+            pengajuan.status = 'selesai'
+            pengajuan.save()
+            return redirect('home')
+    else:
+        form = KwitansiForm()
+    return render(request, 'pengajuan/upload_kwitansi.html', {'form': form})
+
+@login_required
 def view_kwitansi(request, pk):
     kwitansi = get_object_or_404(Kwitansi, surat_pengajuan_id=pk)
     file_path = kwitansi.upload_file.path
-    file_extension = os.path.splitext(file_path)[1].lower()
+    if not os.path.exists(file_path):
+        raise Http404("File does not exist")
 
-    if file_extension in ['.pdf']:
-        with open(file_path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='application/pdf')
-            response['Content-Disposition'] = f'inline; filename={kwitansi.upload_file.name}'
-            return response
-    elif file_extension in ['.jpg', '.jpeg', '.png', '.gif']:
-        return render(request, 'pengajuan/view_image.html', {'kwitansi': kwitansi})
-    else:
-        raise Http404("File type not supported")
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename={os.path.basename(file_path)}'
+        return response
+
 
 @login_required
 def home(request):
@@ -148,20 +164,3 @@ def home(request):
         'sort_by': sort_by,
         'is_admin': request.user.profile.is_admin,
     })
-
-@login_required
-def upload_kwitansi(request, pk):
-    pengajuan = get_object_or_404(SuratPengajuan, pk=pk)
-    if request.method == 'POST':
-        form = KwitansiForm(request.POST, request.FILES)
-        if form.is_valid():
-            kwitansi = form.save(commit=False)
-            kwitansi.surat_pengajuan = pengajuan
-            kwitansi.save()
-            pengajuan.kwitansi_filled = True
-            pengajuan.status = 'selesai'
-            pengajuan.save()
-            return redirect('home')
-    else:
-        form = KwitansiForm()
-    return render(request, 'pengajuan/upload_kwitansi.html', {'form': form})

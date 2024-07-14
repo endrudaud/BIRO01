@@ -63,7 +63,7 @@
                             {% elif disposisi.disposisi_status == 'approved' %}
                                 {% with pengajuan.approvalkepalabiro_set.first as approval %}
                                     {% if approval.approval_status == 'pending' %}
-                                        <a href="{% url 'update_approval_status' approval.id %}" class="btn btn-warning">Update Approval</a>
+                                        <a href="{% url 'update_approval_status' approval.id %}" class="btn btn-warning">Create Approval</a>
                                     {% endif %}
                                 {% endwith %}
                             {% endif %}

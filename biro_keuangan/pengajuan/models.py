@@ -64,7 +64,7 @@ class ApprovalKepalaBiro(models.Model):
 class Kwitansi(models.Model):
     surat_pengajuan = models.ForeignKey(SuratPengajuan, on_delete=models.CASCADE)
     tanggal_pengisian = models.DateTimeField(auto_now_add=True)
-    upload_file = models.FileField(upload_to='kwitansi/', null=True, blank=True)
+    upload_file = models.FileField(upload_to='uploads/', null=True, blank=True)
 
     def __str__(self):
         return f'{self.surat_pengajuan} - {self.tanggal_pengisian}'
